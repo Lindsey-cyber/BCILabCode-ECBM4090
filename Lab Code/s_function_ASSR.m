@@ -28,29 +28,16 @@ end
 function Start(block)
   disp('Running...')
   CurrentTime = 0;
-  global ct;
-  global w;
-
-end
-
-
-fs = 44100;
-fc = 900;
-fm = 40;
-d = 10; % or 6000s
-t = (1 : d * fs) / fs;
-wc = sin(2 * pi * fc * t);
-wm = 1 + sin(2 * pi * fm * t);
-
-%flag_onset = zeros(size(t));
-%flag_onset(t >= delay) = 1;
-%pause(delay);
-%soundsc(w);
-
-function Output(block)
-    
+  global ct
+  global w
+  fs = 44100;
+  fc = 900;
+  fm = 40;
+  d = 10; % or 6000s
+  t = (1 : d * fs) / fs;
+  wc = sin(2 * pi * fc * t);
+  wm = 1 + sin(2 * pi * fm * t);
   w = wc .* wm;
-  ct = get(block, 'CurrentTime');
 
   figure;
   subplot(3,1,1);
@@ -63,10 +50,24 @@ function Output(block)
   xlabel('Time (s)');
   ylabel('Amplitude');
   hold off;
- 
+
+  flag_played = false;
+
+end
+
+%flag_onset = zeros(size(t));
+%flag_onset(t >= delay) = 1;
+%pause(delay);
+%soundsc(w);
+
+function Output(block)
+    
+  ct = get(block, 'CurrentTime');
+
   if ct == 15
       block.OutputPort(1).Data(1) = double(1);
       soundsc(w, fs);
+      flag_played = true;
   end
 
   if ct == 615
